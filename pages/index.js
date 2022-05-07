@@ -1,16 +1,55 @@
 import AppHead from '../components/AppHead';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function Home({ results }) {
+  const router = useRouter();
+  const getMovieId = (id, title, overview, poster) => {
+    router.push(
+      {
+        pathname: `/movies/${id}`,
+        query: {
+          title,
+          overview,
+          poster,
+        },
+      },
+      `/movies/${id}`
+    );
+  };
   return (
     <div className='container'>
       <AppHead title='Home' />
 
       {results?.map((movie) => (
-        <div className='movie' key={movie.id}>
+        <div
+          onClick={() =>
+            getMovieId(
+              movie.id,
+              movie.original_title,
+              movie.overview,
+              movie.poster_path
+            )
+          }
+          className='movie'
+          key={movie.id}
+        >
           <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
-          <h4>{movie.original_title}</h4>
+          <Link
+            href={{
+              pathname: `/movies/${movie.id}`,
+              query: {
+                title: movie.original_title,
+                overview: movie.overview,
+                poster: movie.poster_path,
+              },
+            }}
+            as={`/movies/${movie.id}`}
+          >
+            <a>
+              <h4>{movie.original_title}</h4>
+            </a>
+          </Link>
         </div>
       ))}
 
@@ -20,6 +59,9 @@ export default function Home({ results }) {
           grid-template-columns: 1fr 1fr;
           padding: 20px;
           gap: 20px;
+        }
+        .movie {
+          cursor: pointer;
         }
         .movie img {
           max-width: 100%;
@@ -33,6 +75,10 @@ export default function Home({ results }) {
         .movie h4 {
           font-size: 18px;
           text-align: center;
+          transition: transform 0.2s ease-in-out;
+        }
+        .movie h4:hover {
+          transform: scale(1.1);
         }
       `}</style>
     </div>
